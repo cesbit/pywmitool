@@ -1,0 +1,157 @@
+#!/usr/bin/env python
+'''Python WMI Query Tool
+
+Shell tool for performing WMI queries
+'''
+import argparse
+import asyncio
+import logging
+import time
+import getpass
+from aiowmi.connection import Connection
+from aiowmi.query import Query
+from aiowmi.exceptions import WbemFalse
+from aiowmi.const import (
+    WBEM_FLAG_DIRECT_READ,
+    WBEM_FLAG_USE_AMENDED_QUALIFIERS,
+    WBEM_FLAG_PROTOTYPE,
+    WBEM_FLAG_RETURN_IMMEDIATELY,
+    WBEM_FLAG_FORWARD_ONLY,
+)
+
+
+async def main(address, username, password, domain, wqlstr, namespace):
+    query =  Query(wqlstr, namespace=namespace)
+
+    start = time.time()
+    service = None
+
+    conn = Connection(address, username, password, domain=domain)
+    await conn.connect()
+    try:
+        service = await conn.negotiate_ntlm()
+
+        await query.start(conn, service)
+
+        while True:
+            try:
+                res = await query.next()
+            except WbemFalse:
+                break
+
+            props = res.get_properties()
+
+            for name, prop in props.items():
+                if prop.value is None:
+                    if prop.get_type() == int:
+                        prop.value = 0
+
+                print(name, '\n\t', prop.value)
+
+                if prop.is_reference():
+                    try:
+                        res = await prop.get_reference(conn, service)
+                    except WbemFalse:
+                        continue
+                    ref_props = res.get_properties()
+                    for name, prop in ref_props.items():
+                        print('\t\t', name, '\n\t\t\t', prop.value)
+
+    except Exception:
+        raise
+    finally:
+        if service:
+            service.close()
+        conn.close()
+        end = time.time()
+        logging.debug(f'done in {end-start}')
+
+
+__version__ = (0, 1, 0)  # Update setup.py as well
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        '-a',
+        '--address',
+        type=str,
+        required=True,
+        help='Host name or address of remote host')
+
+    parser.add_argument(
+        '-u',
+        '--username',
+        type=str,
+        required=True,
+        help='Username')
+
+    parser.add_argument(
+        '-p',
+        '--password',
+        type=str,
+        help='Password')
+
+    parser.add_argument(
+        '-d',
+        '--domain',
+        type=str,
+        default='',
+        help='Domain name')
+
+    parser.add_argument(
+        '-q',
+        '--wql',
+        type=str,
+        required=True,
+        help='WQL String')
+
+    parser.add_argument(
+        '-n',
+        '--namespace',
+        type=str,
+        default='root/cimv2',
+        help='Namespace')
+
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable debug logging')
+
+    parser.add_argument(
+        '--version',
+        action='store_true',
+        help='Print version and exit')
+
+    args = parser.parse_args()
+
+    if not args.password:
+        args.password = getpass.getpass(prompt='Password: ', stream=None)
+
+    if args.version:
+        sys.exit(__version__)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    ch = logging.StreamHandler()
+
+    ch.setLevel(logging.DEBUG if args.debug else logging.WARNING)
+
+    formatter = logging.Formatter(
+            fmt='[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d] ' +
+                '%(message)s',
+            datefmt='%y%m%d %H:%M:%S',
+            style='%')
+
+    ch.setFormatter(formatter)
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main(
+        args.address,
+        args.username,
+        args.password,
+        args.domain,
+        args.wql,
+        args.namespace,
+    ))

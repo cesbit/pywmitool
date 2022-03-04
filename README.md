@@ -1,13 +1,13 @@
-# MessagePack View
+# Python WMI Query Tool
 
-Print saved messagepack data
+Run a WMI (WQL) query on a remote host.
 
 ## Installation
 
 Using pip:
 
 ```shell
-pip install mpview
+pip install pywmitool
 ```
 
 Or, clone this project and use the setup
@@ -19,6 +19,6 @@ python setup.py install
 ## Example usage
 
 ```shell
-mpview <filename>
+pywmitool -a HOST_OR_IP -u USERNAME -q "SELECT Name FROM Win32_OperatingSystem"
 ```
 
