@@ -13,9 +13,11 @@ try:
 except IOError:
     long_description = ''
 
+version = '0.1.1'  # Update version in bin/pywmitool as well
+
 setup(
     name='pywmitool',
-    version='0.1.1',  # Update version in bin/pywmitool as well
+    version=version,
     description='WMI query tool',
     url='https://github.com/cesbit/pywmitool',
     download_url=(
