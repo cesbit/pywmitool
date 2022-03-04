@@ -16,6 +16,28 @@ Or, clone this project and use the setup
 python setup.py install
 ```
 
+## Help
+
+```
+usage: pywmitool [-h] -a ADDRESS -u USERNAME [-p PASSWORD] [-d DOMAIN] -q WQL [-n NAMESPACE] [--debug] [--version]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ADDRESS, --address ADDRESS
+                        host name or address of remote host
+  -u USERNAME, --username USERNAME
+                        Username
+  -p PASSWORD, --password PASSWORD
+                        password (asked if not provided)
+  -d DOMAIN, --domain DOMAIN
+                        optional domain name
+  -q WQL, --wql WQL     WQL string
+  -n NAMESPACE, --namespace NAMESPACE
+                        Namespace, defaults to `root/cimv2`
+  --debug               Enable debug logging
+  --version             Print version and exit
+  ```
+
 ## Example usage
 
 ```shell

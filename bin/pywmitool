@@ -77,7 +77,7 @@ if __name__ == '__main__':
         '--address',
         type=str,
         required=True,
-        help='Host name or address of remote host')
+        help='host name or address of remote host')
 
     parser.add_argument(
         '-u',
@@ -90,28 +90,28 @@ if __name__ == '__main__':
         '-p',
         '--password',
         type=str,
-        help='Password')
+        help='password (asked if not provided)')
 
     parser.add_argument(
         '-d',
         '--domain',
         type=str,
         default='',
-        help='Domain name')
+        help='optional domain name')
 
     parser.add_argument(
         '-q',
         '--wql',
         type=str,
         required=True,
-        help='WQL String')
+        help='WQL string')
 
     parser.add_argument(
         '-n',
         '--namespace',
         type=str,
         default='root/cimv2',
-        help='Namespace')
+        help='Namespace, defaults to `root/cimv2`')
 
     parser.add_argument(
         '--debug',
