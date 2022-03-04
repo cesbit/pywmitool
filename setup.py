@@ -18,6 +18,9 @@ setup(
     version='0.1.1',  # Update version in bin/pywmitool as well
     description='WMI query tool',
     url='https://github.com/cesbit/pywmitool',
+    download_url=(
+        'https://github.com/cesbit/'
+        'pywmitool/tarball/v{}'.format(version)),
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jeroen van der Heijden',
