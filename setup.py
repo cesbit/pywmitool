@@ -15,7 +15,7 @@ except IOError:
 
 setup(
     name='pywmitool',
-    version='0.1.0',  # Update version in pywmitool as well
+    version='0.1.1',  # Update version in bin/pywmitool as well
     description='WMI query tool',
     url='https://github.com/cesbit/pywmitool',
     long_description=long_description,
