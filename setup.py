@@ -1,7 +1,7 @@
 """
 Upload to PyPI
 
-python3 setup.py sdist
+python setup.py sdist
 twine upload --repository pypitest dist/pywmitool-X.X.X.tar.gz
 twine upload --repository pypi dist/pywmitool-X.X.X.tar.gz
 """
@@ -17,11 +17,11 @@ setup(
     name='pywmitool',
     version='0.1.0',  # Update version in pywmitool as well
     description='WMI query tool',
-    url='https://github.com/transceptor-technology/pywmitool',
+    url='https://github.com/cesbit/pywmitool',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jeroen van der Heijden',
-    author_email='jeroen@transceptor.technology',
+    author_email='jeroen@cesbit.com',
     scripts=['bin/pywmitool'],
     license='MIT',
     classifiers=[
