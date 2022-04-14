@@ -10,7 +10,7 @@ import time
 import getpass
 from aiowmi.connection import Connection
 from aiowmi.query import Query
-from aiowmi.exceptions import WbemFalse
+from aiowmi.exceptions import WbemFalse, ServerNotOptimized
 from aiowmi.const import (
     WBEM_FLAG_DIRECT_READ,
     WBEM_FLAG_USE_AMENDED_QUALIFIERS,
@@ -20,18 +20,29 @@ from aiowmi.const import (
 )
 
 
-async def main(address, username, password, domain, wqlstr, namespace):
-    query =  Query(wqlstr, namespace=namespace)
+async def main(
+        address, username, password, domain,
+        wqlstr, namespace, timeout, noopt):
+    query = Query(wqlstr, namespace=namespace)
 
     start = time.time()
     service = None
 
     conn = Connection(address, username, password, domain=domain)
-    await conn.connect()
+    await conn.connect(timeout=timeout)
     try:
         service = await conn.negotiate_ntlm()
 
         await query.start(conn, service)
+
+        if not noopt:
+            try:
+                await query.optimize()
+                logging.debug('Using Smart Enum requests')
+            except ServerNotOptimized:
+                logging.debug('Server is not optimized')
+        else:
+            logging.debug('Optimize disabled')
 
         while True:
             try:
@@ -67,7 +78,7 @@ async def main(address, username, password, domain, wqlstr, namespace):
         logging.debug(f'done in {end-start}')
 
 
-__version__ = (0, 1, 1)  # Update setup.py as well
+__version__ = (0, 1, 2)  # Update setup.py as well
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -114,6 +125,18 @@ if __name__ == '__main__':
         help='Namespace, defaults to `root/cimv2`')
 
     parser.add_argument(
+        '-t',
+        '--timeout',
+        type=int,
+        default=5,
+        help='Timeout in seconds')
+
+    parser.add_argument(
+        '--no-optimize',
+        action='store_true',
+        help='Disable Smart Enum for optimized queries')
+
+    parser.add_argument(
         '--debug',
         action='store_true',
         help='Enable debug logging')
@@ -132,7 +155,7 @@ if __name__ == '__main__':
         sys.exit(__version__)
 
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.DEBUG if args.debug else logging.WARNING)
 
     ch = logging.StreamHandler()
 
@@ -154,4 +177,6 @@ if __name__ == '__main__':
         args.domain,
         args.wql,
         args.namespace,
+        args.timeout,
+        args.no_optimize
     ))
