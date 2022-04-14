@@ -1,1 +1,1 @@
-aiowmi
+aiowmi>=0.1.9

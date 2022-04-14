@@ -51,7 +51,7 @@ setup(
         'Programming Language :: Python :: 3.10',
     ],
     install_requires=[
-        'aiowmi'
+        'aiowmi>=0.1.9'
     ],
     keywords='pywmitool',
 )
