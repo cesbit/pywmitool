@@ -13,7 +13,7 @@ try:
 except IOError:
     long_description = ''
 
-version = '0.1.2'  # Update version in bin/pywmitool as well
+version = '0.1.3'  # Update version in bin/pywmitool as well
 
 setup(
     name='pywmitool',
@@ -51,7 +51,7 @@ setup(
         'Programming Language :: Python :: 3.10',
     ],
     install_requires=[
-        'aiowmi>=0.1.9'
+        'aiowmi>=0.1.13'
     ],
     keywords='pywmitool',
 )
