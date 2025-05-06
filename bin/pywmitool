@@ -42,14 +42,12 @@ async def main(
             try:
                 res = await query.next()
             except WbemFalse:
-                print('STOP')
                 break
-            print('NEXT')
             props = res.get_properties()
 
             for name, prop in props.items():
                 if prop.value is None:
-                    if prop.get_type() == int:
+                    if prop.get_type() is int:
                         prop.value = 0
 
                 print(name, '\n\t', prop.value)
@@ -74,7 +72,7 @@ async def main(
         logging.debug(f'done in {end-start}')
 
 
-__version__ = (1, 0, 0)  # Update setup.py as well
+__version__ = (1, 0, 1)  # Update setup.py as well
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -148,7 +146,8 @@ if __name__ == '__main__':
         args.password = getpass.getpass(prompt='Password: ', stream=None)
 
     if args.version:
-        sys.exit(__version__)
+        print(__version__)
+        sys.exit(0)
 
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG if args.debug else logging.WARNING)
